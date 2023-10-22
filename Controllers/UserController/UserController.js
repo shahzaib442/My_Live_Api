@@ -1,18 +1,18 @@
 const bcrypt = require('bcrypt')
 var jwt = require('jsonwebtoken');
-// const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer");
 const usermodel = require('../../Models/UserModel/UserModel')
 
 const SECRET_KEY = 'SECRET_KEY'
 
-// const transporter = nodemailer.createTransport({
-//     service: 'Gmail',
-//     auth: {
-//         user: 'muhammadshahzaib955@gmail.com',
-//         pass: 'rotj vwsu rgab fyaw',
-//     },
-//     secure: true, 
-// });
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'muhammadshahzaib955@gmail.com',
+        pass: 'rotj vwsu rgab fyaw',
+    },
+    secure: true, 
+});
 
 const Login = async (request, response) => {
     const { email, password } = request.body;
@@ -72,22 +72,22 @@ const Register = async (request, response) => {
     }
 }
 
-// const sendotp = async (request, response) => {
-//     const mailOptions = {
-//         from: 'muhammadshahzaib955@gmail.com',
-//         to: 'muhammadshahzaib9556@example.com',
-//         subject: 'Hello from Nodemailer',
-//         text: 'This is a test email sent from Nodemailer.',
-//     };
+const sendotp = async (request, response) => {
+    const mailOptions = {
+        from: 'muhammadshahzaib955@gmail.com',
+        to: 'muhammadshahzaib9556@example.com',
+        subject: 'Hello from Nodemailer',
+        text: 'This is a test email sent from Nodemailer.',
+    };
 
-//     transporter.sendMail(mailOptions, (error, info) => {
-//         if (error) {
-//             console.error('Error sending email: ', error);
-//         } else {
-//             console.log('Email sent: ', info.response);
-//         }
-//     });
-// }
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending email: ', error);
+        } else {
+            console.log('Email sent: ', info.response);
+        }
+    });
+}
 
 
 const getalluser = async (request, response) => {
@@ -99,5 +99,5 @@ module.exports = {
     Login,
     Register,
     getalluser,
-    // sendotp
+    sendotp
 }

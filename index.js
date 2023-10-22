@@ -12,9 +12,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1/', require('./Routes/UserRoute/UserRoutes'))
 
-app.use('/', (req, res) => {
-    res.send("<h2>Your App Is Live Now</h2>")
-})
+// app.use('/', (req, res) => {
+//     res.send("<h2>Your App Is Live Now</h2>")
+// })
 //Auth Routes
 
 app.listen(PORT, () => {
