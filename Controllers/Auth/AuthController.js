@@ -5,21 +5,23 @@ const SECRET_KEY = 'SECRET_KEY'
 
 const Login = async (request, response) => {
     const { phone } = request.body;
-    const checkuser = await usermodel.findOne({ phone: phone });
-
-    if (checkuser) {
-        response.status(200).json({
-            message: 'User Login Success',
-            data: ({
-                ...checkuser._doc_id,
-            })
-        });
-    } else {
-        response.status(200).json({
-            message: 'Phone Number Not Exist',
-        });
+    try {
+        const checkuser = await authmodel.findOne({ phone: phone });
+        if (checkuser) {
+            response.status(200).json({
+                message: 'User Login Success',
+                data: checkuser._doc, // Removed unnecessary spread operator
+            });
+        } else {
+            response.status(200).json({
+                message: 'Phone Number Not Exist',
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
 
 const Register = async (request, response) => {
     const checkuser = await authmodel.findOne({ phone: request.body.phone });
@@ -40,9 +42,7 @@ const Register = async (request, response) => {
             const saveuser = await newuser.save();
             response.status(200).json({
                 message: 'User Register Success',
-                data: ({
-                    ...saveuser._doc._id,
-                }),
+                data: saveuser,
             });
         } catch (error) {
             console.error(error);
@@ -55,31 +55,36 @@ const Register = async (request, response) => {
 const verifyotp = async (request, response) => {
     try {
         const checkuser = await authmodel.findOne({ _id: request.body.id });
-
-        if (checkuser.isValid == false) {
-            checkuser.isValid = true;
-            const data = await checkuser.save(); // Use await to handle the save operation asynchronously
-            var token = jwt.sign({ user_id: checkuser?._id, phone: checkuser.phone }, SECRET_KEY);
-            response.status(200).json({
-                message: 'isValid field updated successfully',
-                data: ({
-                    ...data._doc,
-                    token: token
-                })
-            });
+        if (checkuser) {
+            if (!checkuser.isValid) {
+                checkuser.isValid = true;
+                const data = await checkuser.save();
+                const token = jwt.sign({ user_id: checkuser._id, phone: checkuser.phone }, SECRET_KEY);
+                response.status(200).json({
+                    message: 'isValid field updated successfully',
+                    data: {
+                        ...data._doc,
+                        token: token,
+                    },
+                });
+            } else {
+                const token = jwt.sign({ user_id: checkuser._id, phone: checkuser.phone }, SECRET_KEY);
+                response.status(200).json({
+                    message: 'Field Already Updated',
+                    data: {
+                        ...checkuser._doc,
+                        token: token,
+                    },
+                });
+            }
         } else {
-            var token = jwt.sign({ user_id: checkuser?._id, phone: checkuser.phone }, SECRET_KEY);
             response.status(200).json({
-                message: 'Field Already Updated',
-                data: ({
-                    ...checkuser._doc,
-                    token: token
-                })
+                message: 'User not found',
             });
         }
     } catch (error) {
         console.error(error);
-        response.status(500).json({ error: 'Error updating isValid field' });
+        response.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
