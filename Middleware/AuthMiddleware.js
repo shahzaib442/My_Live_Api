@@ -12,7 +12,7 @@ module.exports = async (request, response, next) => {
 
     try {
         let user = await jwt.verify(token, SECRET_KEY)
-        request.email = user.email
+        request.phone = user.phone
         next()
     } catch (error) {
         return response.status(200).json({

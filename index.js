@@ -10,7 +10,8 @@ DBconnection()
 app.use(express.json()); // To parse JSON data
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/v1/', require('./Routes/UserRoute/UserRoutes'))
+// app.use('/api/v1/', require('./Routes/UserRoute/UserRoutes'))
+app.use('/api/v1/', require('./Routes/Auth/AuthRoutes'))
 
  app.use('/', (req, res) => {
      res.send("<h2>Your App Is Live Now</h2>")
