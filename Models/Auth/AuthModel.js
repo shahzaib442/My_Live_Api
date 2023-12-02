@@ -15,7 +15,8 @@ const Auth = new mongoose.Schema({
     phone: { type: String, required: true },
     gender: { type: String, required: true, enum: genderEnum },
     dob: { type: String, required: true, validate: dobValidator },
-    isValid: { type: Boolean, default: false},
+    isValid: { type: Boolean, default: false },
+    image: { type: String }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Auth', Auth);

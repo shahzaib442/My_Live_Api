@@ -32,11 +32,18 @@ const Register = async (request, response) => {
         });
     } else {
         try {
+            if (!request.file) {
+                return response.status(400).json({ error: 'Image upload failed' });
+            }
+
+            // Get the image URL from the request file object
+            const imageUrl = request.file.location;
             const newuser = new authmodel({
                 name: request.body.name,
                 phone: request.body.phone,
                 gender: request.body.gender,
                 dob: request.body.dob,
+                image: imageUrl
             });
 
             const saveuser = await newuser.save();
@@ -101,9 +108,26 @@ const getalluser = async (request, response) => {
     }
 }
 
+const upload = (req, res) => {
+    try {
+        // Check if the image upload was successful
+        if (!req.file) {
+            return res.status(400).json({ error: 'Image upload failed' });
+        }
+
+        // Get the image URL from the request file object
+        const imageUrl = req.file.location;
+
+        console.log(`Image URL: ${imageUrl}`);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 module.exports = {
     Login,
     Register,
     verifyotp,
-    getalluser
+    getalluser,
+    upload
 }
