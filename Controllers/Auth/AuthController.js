@@ -33,24 +33,38 @@ const Register = async (request, response) => {
     } else {
         try {
             if (!request.file) {
-                return response.status(400).json({ error: 'Image upload failed' });
+                // Get the image URL from the request file object
+                const imageUrl = "Null";
+                const newuser = new authmodel({
+                    name: request.body.name,
+                    phone: request.body.phone,
+                    gender: request.body.gender,
+                    dob: request.body.dob,
+                    image: imageUrl
+                });
+
+                const saveuser = await newuser.save();
+                response.status(200).json({
+                    message: 'User Register Success',
+                    data: saveuser,
+                });
+            } else {
+                // Get the image URL from the request file object
+                const imageUrl = request.file.location;
+                const newuser = new authmodel({
+                    name: request.body.name,
+                    phone: request.body.phone,
+                    gender: request.body.gender,
+                    dob: request.body.dob,
+                    image: imageUrl
+                });
+
+                const saveuser = await newuser.save();
+                response.status(200).json({
+                    message: 'User Register Success',
+                    data: saveuser,
+                });
             }
-
-            // Get the image URL from the request file object
-            const imageUrl = request.file.location;
-            const newuser = new authmodel({
-                name: request.body.name,
-                phone: request.body.phone,
-                gender: request.body.gender,
-                dob: request.body.dob,
-                image: imageUrl
-            });
-
-            const saveuser = await newuser.save();
-            response.status(200).json({
-                message: 'User Register Success',
-                data: saveuser,
-            });
         } catch (error) {
             console.error(error);
             response.status(500).json({ error: 'User Not Created' });
@@ -65,17 +79,29 @@ const verifyotp = async (request, response) => {
         if (checkuser) {
             if (!checkuser.isValid) {
                 checkuser.isValid = true;
-                const data = await checkuser.save();
-                const token = jwt.sign({ user_id: checkuser._id, phone: checkuser.phone }, SECRET_KEY);
+                const user_info = await checkuser.save();
+                const data = {
+                    user: {
+                        id: user_info._id,
+                        phone: user_info.phone
+                    },
+                };
+                const token = jwt.sign(data, SECRET_KEY);
                 response.status(200).json({
                     message: 'isValid field updated successfully',
                     data: {
-                        ...data._doc,
+                        ...user_info._doc,
                         token: token,
                     },
                 });
             } else {
-                const token = jwt.sign({ user_id: checkuser._id, phone: checkuser.phone }, SECRET_KEY);
+                const data = {
+                    user: {
+                        id: checkuser._id,
+                        phone: checkuser.phone
+                    },
+                };
+                const token = jwt.sign(data, SECRET_KEY);
                 response.status(200).json({
                     message: 'Field Already Updated',
                     data: {
@@ -97,28 +123,35 @@ const verifyotp = async (request, response) => {
 
 
 const getalluser = async (request, response) => {
-    try {
-        const checkuser = await authmodel.find();
-        response.status(200).json({
-            message: 'User Data',
-            data: checkuser
-        });
-    } catch (error) {
-        console.error(error);
-    }
+    response.status(200).json({
+        message: 'User Data',
+        data: request.user.phone
+    });
+    // try {
+    //     const checkuser = await authmodel.find();
+    //     response.status(200).json({
+    //         message: 'User Data',
+    //         data: checkuser
+    //     });
+    // } catch (error) {
+    //     console.error(error);
+    // }
 }
 
 const upload = (req, res) => {
     try {
+        const driver_image = req.files[0].location
+        const car_image = req.files[1].location
+        console.log({
+            driver_image: driver_image,
+            car_image: car_image
+        })
         // Check if the image upload was successful
-        if (!req.file) {
-            return res.status(400).json({ error: 'Image upload failed' });
-        }
+        // if (!req.file) {
+        //     return res.status(400).json({ error: 'Image upload failed' });
+        // }
 
-        // Get the image URL from the request file object
-        const imageUrl = req.file.location;
-
-        console.log(`Image URL: ${imageUrl}`);
+        // const imageUrl = req.files;
     } catch (error) {
         console.error(error);
     }
