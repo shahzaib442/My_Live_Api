@@ -1,5 +1,7 @@
 var jwt = require('jsonwebtoken');
+const twilio = require('twilio');
 const authmodel = require('../../Models/Auth/AuthModel')
+const client = twilio(process.env.Account_SID, process.env.Auth_Token);
 
 const SECRET_KEY = 'SECRET_KEY'
 
@@ -157,10 +159,33 @@ const upload = (req, res) => {
     }
 }
 
+
+const twilio_otp = async (request, response) => {
+    // const lookup = await client.lookups.phoneNumbers("+923024281806").fetch();
+    // console.log(lookup);
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    // Send OTP via Twilio
+    client.messages
+        .create({
+            body: `Your OTP is: ${otp}`,
+            from: "+1 443 221 2795",
+            to: "+923024281806",
+        })
+        .then(() => {
+            response.json({ success: true, otp });
+        })
+        .catch((error) => {
+            console.error(error);
+            response.status(500).json({ error: 'Failed to send OTP' });
+        });
+}
+
 module.exports = {
     Login,
     Register,
     verifyotp,
     getalluser,
-    upload
+    upload,
+    twilio_otp
 }

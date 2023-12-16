@@ -10,7 +10,7 @@ const dobValidator = {
     message: 'Invalid date of birth format. Please use dd-mm-yyyy.',
 };
 
-const Auth = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     phone: { type: String, required: true },
     gender: { type: String, required: true, enum: genderEnum },
@@ -19,4 +19,4 @@ const Auth = new mongoose.Schema({
     image: { type: String }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Auth', Auth);
+module.exports = mongoose.model('users', UserSchema);
